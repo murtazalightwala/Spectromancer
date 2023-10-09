@@ -8,6 +8,7 @@ class BaseGameConfig:
     def configure_player(cls, player):
         cls.set_player_mana(player)
         cls.set_player_mana_inc(player)
+        cls.set_player_life(player)
 
     @staticmethod
     def set_player_mana(player):
@@ -27,7 +28,18 @@ class BaseGameConfig:
     
     @staticmethod
     def set_player_slots(player):
-        player.slots = [Slot(player, "A"), Slot(player, "B"), Slot(player, "C"), Slot(player, "D"), Slot(player, "E"), Slot(player, "F")]
+        player.slots = {
+            "A": Slot(player, "A"),
+            "B": Slot(player, "B"),
+            "C": Slot(player, "C"),
+            "D": Slot(player, "D"),
+            "E": Slot(player, "E"),
+            "F": Slot(player, "F")
+                }
+
+    @staticmethod
+    def set_player_life(player):
+        player.set_life(60)
 
 
 class BaseGame:

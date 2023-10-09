@@ -1,0 +1,3 @@
+
+class BaseBuff:
+    pass
