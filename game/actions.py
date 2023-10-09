@@ -150,3 +150,4 @@ class MoveCard(BaseAction):
                 card.slot_id = self._to
                 card.slot = self.target.slots[self._to]
                 self.target.slots[self._to].set_card(card)
+                
