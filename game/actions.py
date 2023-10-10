@@ -16,7 +16,8 @@ class BaseAction:
 
     @abstractmethod
     def __call__(self, *args, **kwargs):
-        raise Exception("Not Implemented!!!!")
+        # raise Exception("Not Implemented!!!!")
+        pass
 
 class BasicAttack(BaseAction):
 
