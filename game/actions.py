@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from .cards import CardMap
 
 class BaseAction:
@@ -13,8 +14,9 @@ class BaseAction:
         self.target = target
         self.stage = stage
 
+    @abstractmethod
     def __call__(self, *args, **kwargs):
-        pass
+        raise Exception("Not Implemented!!!!")
 
 class BasicAttack(BaseAction):
 
@@ -150,4 +152,4 @@ class MoveCard(BaseAction):
                 card.slot_id = self._to
                 card.slot = self.target.slots[self._to]
                 self.target.slots[self._to].set_card(card)
-                
+
