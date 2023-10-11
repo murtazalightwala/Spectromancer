@@ -1,5 +1,5 @@
-from cards import CardMap
-from cards import Deck
+from .cards import CardMap
+from .cards import Deck
 
 special_mapping = {
     "Death": "death",

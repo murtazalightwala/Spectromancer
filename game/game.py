@@ -1,4 +1,4 @@
-from slot import Slot
+from .slot import Slot
 
 
 

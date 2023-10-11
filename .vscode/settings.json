@@ -1,6 +1,6 @@
 {
     "sonarlint.connectedMode.project": {
-        "connectionId": "",
-        "projectKey": ""
+        "connectionId": "https-murtazalightwala-online-sonarqube",
+        "projectKey": "Spectromancer"
     }
 }
