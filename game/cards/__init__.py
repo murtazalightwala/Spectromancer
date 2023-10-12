@@ -20,6 +20,6 @@ class CardMap:
         mana_cost = card.mana_cost
         life = card.life
         attack = card.attack
-        type = card.type
-        return {"attack":attack, "life":life, "mana_cost": mana_cost, "type": type}
+        _type = card.type
+        return {"attack":attack, "life":life, "mana_cost": mana_cost, "type": _type}
     

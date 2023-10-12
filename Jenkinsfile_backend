@@ -1,0 +1,19 @@
+node {
+  stage('SCM') {
+    checkout scm
+  }
+  stage('SonarQube Analysis') {
+    def scannerHome = tool 'Sonarscanner';
+    withSonarQubeEnv('sonarqube') {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
+  }
+  stage('Tests') {
+    sh "curl -sSL https://install.python-poetry.org | python3 -";
+    sh "/root/.local/bin/poetry install";
+    sh "/root/.local/bin/poetry run python3 -m pytest tests/backend_tests.py";
+  }
+  stage('Code Merge'){
+    sh 'git push origin staging';
+  }
+}
