@@ -223,8 +223,7 @@ class Dragon(BaseFireCard):
             
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc("fire")
-            target.set_mana_inc("fire", mana_inc - 1)
+            setattr(target, "play_card", f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]

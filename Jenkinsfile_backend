@@ -13,12 +13,15 @@ node {
     sh "/root/.local/bin/poetry install";
     sh "/root/.local/bin/poetry run python3 -m pytest tests/backend_tests.py";
   }
-  stage('Code Merge'){
-    git branch: 'main', credentialsId: 'murtaza_lightwala_github_creds', url: 'https://github.com/murtazalightwala/Spectromancer';
-    sh 'git remote set-url origin $repository'
-    sh 'git checkout staging';
+  stage('Code Merge main - staging'){
+    withCredentials([gitUsernamePassword(credentialsId: 'murtaza_lightwala_github_creds', gitToolName: 'Default')]){
+    sh 'git config user.email "murtaza.jenkins@gmail.com"';
+    sh 'git config user.name "Jenkins"';
+    sh 'git remote set-url origin https://github.com/murtazalightwala/Spectromancer'
+    sh 'git checkout origin/staging';
     sh 'git merge main';
     sh 'git commit -m lele';
     sh 'git push origin staging';
+  }
   }
 }
