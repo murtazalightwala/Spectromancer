@@ -1,7 +1,0 @@
-{
-    "sonarlint.connectedMode.project": {
-        "connectionId": "https-murtazalightwala-online-sonarqube",
-        "projectKey": "Spectromancer"
-    },
-    "python.analysis.autoImportCompletions": true
-}
