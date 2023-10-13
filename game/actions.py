@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from .cards import CardMap
+from game.cards import CardMap
 
 class BaseAction:
     """
