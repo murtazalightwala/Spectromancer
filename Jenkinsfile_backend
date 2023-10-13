@@ -13,7 +13,7 @@ node {
     sh "/root/.local/bin/poetry install";
     sh "/root/.local/bin/poetry run python3 -m pytest tests/backend_tests.py";
   }
-  stage('Code Merge'){
+  stage('Code Merge main - staging'){
     withCredentials([gitUsernamePassword(credentialsId: 'murtaza_lightwala_github_creds', gitToolName: 'Default')]){
     sh 'git config user.email "murtaza.jenkins@gmail.com"';
     sh 'git config user.name "Jenkins"';
