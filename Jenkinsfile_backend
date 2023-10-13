@@ -14,6 +14,7 @@ node {
     sh "/root/.local/bin/poetry run python3 -m pytest tests/backend_tests.py";
   }
   stage('Code Merge'){
+    git branch: 'main', credentialsId: 'murtaza_lightwala_github_creds', url: 'https://github.com/murtazalightwala/Spectromancer';
     sh 'git remote update';
     sh 'git fetch';
     sh 'git checkout staging';
