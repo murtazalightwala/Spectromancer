@@ -49,7 +49,18 @@ class ApplyBuff(BaseAction):
         self.buff = buff
         
     def __call__(self, *args, **kwargs):
-        pass
+        self.buff.apply_buff(self.buff.target, *args, **kwargs)
+
+class ApplyDebuff(BaseAction):
+
+    type = "ApplyDebuff"
+
+    def __init__(self, buff, *args, **kwargs):
+        super().__init__(**kwargs)
+        self.buff = buff
+    
+    def __call__(self, *args, **kwargs):
+        self.buff.apply_debuff(self.buff.target, *args, **kwargs)
 
 class Heal(BaseAction):
     
