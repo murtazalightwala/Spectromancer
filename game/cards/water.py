@@ -71,4 +71,57 @@ class IceGuard(BaseWaterCard):
     attack = 3
     life = 20
 
+    def summon_actions(self, *args, **kwargs):
+        f = self.slot.player.take_damage
+        
+        def buff_function(target):
+            def _func(_obj, damage, *args, **kwargs):
+                return _obj.take_damage(damage//2, *args, **kwargs)
+            setattr(target, "take_damage", _func)
+            
+        
+        def debuff_function(target):
+            setattr(target, "take_damage", f)
+        
+        buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
+        self.buffs = [buff]
+        
+        yield ApplyBuff(buff = buff, doer = self, target = self.slot.player, stage = "summon", *args, **kwargs)
+
+class GiantTurtle(BaseWaterCard):
+    name = "Giant Turtle"
+    mana_cost = 7 
+    attack = 5
+    life = 16
+
+    def take_damage(self, damage, type, stage, *args, **kwargs):
+        return super().take_damage(max(damage - 5, 0), type, stage, *args, **kwargs)
+    
+class AcidicRain(SpellMixin, BaseWaterCard):
+    name = "Acidic Rain"
+    spell = True
+    mana_cost = 8
+
+    def summon_actions(self, *args, **kwargs):
+        owner = self.player
+        opponent = self.player.opponent
+
+        for slot_id, slot in owner.slots.items():
+            if slot.card is not None:
+                yield SpecialAttack(doer = self, target = slot.card, damage = 15, stage = "summon", *args, **kwargs)
+        
+        for slot_id, slot in opponent.slots.items():
+            if slot.card is not None:
+                yield SpecialAttack(doer = self, target = slot.card, damage = 15, stage = "summon", *args, **kwargs)
+        
+        for element in opponent.mana:
+            yield ManaDrain(doer = self, target = opponent, element = element, decrease = 1, *args, **kwargs)
+
+class MerfolkOverlord(BaseWaterCard):
+
+    name = "Merfolk Overlord"
+    mana_cost = 9
+    attack = 7
+    life = 35
+
     
