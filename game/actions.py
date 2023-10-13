@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from .cards import CardMap
 
 class BaseAction:
     """
@@ -131,6 +130,8 @@ class AddCard(BaseAction):
         self.replace = replace
 
     def __call__(self, *args, **kwargs):
+        from game.cards import CardMap
+
         if self.target.slots[self.slot_id].is_empty:
             self.target.slots[self.slot_id].set_card(CardMap.get_card_by_name(self.card_name, player = self.target, slot = self.target.slots[self.slot_id], slot_id = self.slot_id))
         elif self.replace:

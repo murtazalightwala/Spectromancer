@@ -1,7 +1,7 @@
-from cards import BaseCard, SpellMixin
-from actions import *
-from buff import BaseBuff
-from slot import Slot
+from game.cards import BaseCard, SpellMixin
+from game.actions import *
+from game.buff import BaseBuff
+from game.slot import Slot
 
 class BaseFireCard(BaseCard):
     type = "Fire"
@@ -68,7 +68,7 @@ class OrcChiefTain(BaseFireCard):
     mana_cost = 5
     attack = 3
     life = 17
-    self.buffs = []
+    buffs = []
 
     def summon_actions(self, *args, **kwargs):
         
