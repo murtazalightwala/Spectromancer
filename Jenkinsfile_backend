@@ -16,7 +16,7 @@ node {
   stage('Code Merge'){
     git branch: 'main', credentialsId: 'murtaza_lightwala_github_creds', url: 'https://github.com/murtazalightwala/Spectromancer';
     sh 'git remote set-url origin https://github.com/murtazalightwala/Spectromancer'
-    sh 'git checkout staging';
+    sh 'git checkout origin/staging';
     sh 'git merge main';
     sh 'git commit -m lele';
     sh 'git push origin staging';
