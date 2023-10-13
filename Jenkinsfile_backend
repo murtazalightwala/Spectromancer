@@ -14,6 +14,8 @@ node {
     sh "/root/.local/bin/poetry run python3 -m pytest tests/backend_tests.py";
   }
   stage('Code Merge'){
+    sh 'git remote update';
+    sh 'git fetch';
     sh 'git checkout staging';
     sh 'git merge main';
     sh 'git commit -m lele';
