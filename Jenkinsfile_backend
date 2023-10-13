@@ -16,6 +16,7 @@ node {
   stage('Code Merge'){
     git branch: 'main', credentialsId: 'murtaza_lightwala_github_creds', url: 'https://github.com/murtazalightwala/Spectromancer';
     sh 'git remote update';
+    sh 'git branch --list';
     sh 'git fetch';
     sh 'git checkout staging';
     sh 'git merge main';
