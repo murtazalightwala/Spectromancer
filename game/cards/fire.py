@@ -68,7 +68,7 @@ class OrcChiefTain(BaseFireCard):
     mana_cost = 5
     attack = 3
     life = 17
-    self.buffs = []
+    buffs = []
 
     def summon_actions(self, *args, **kwargs):
         
