@@ -1,5 +1,6 @@
 from game.slot import Slot
 from game.actions import ApplyDebuff, BasicAttack
+from game.buff import BuffManager
 
 class Deck:
     def __init__(self) -> None:
@@ -11,13 +12,33 @@ class Deck:
 class BaseCard:
     type:str
     name:str
-    attack:int
-    life:int
-    mana_cost:int
-    state:str
+    _attack:int
+    _life:int
+    _mana_cost:int
+    _state:str
     slot: Slot
     spell:bool = False
     wall:bool = False
+
+    @BuffManager
+    @property
+    def attack(self):
+        return self._attack
+
+    @BuffManager
+    @property
+    def life(self):
+        return self._life
+
+    @BuffManager
+    @property
+    def mana_cost(self):
+        return self._mana_cost
+
+    @BuffManager
+    @property
+    def state(self):
+        return self._state
 
     def __init__(self, slot, *args, **kwargs):
         self.slot = slot

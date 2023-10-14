@@ -22,3 +22,32 @@ class BaseBuff:
         self.doer.buffs_doer.remove(self)
         target.buffs_target.remove(self)
     
+
+class BuffManager:
+    def __init__(self, function, *args, **kwargs):
+        self.function = function
+        self.buffs = set()
+
+    def add_buff(self, buff, *args, **kwargs):
+        self.buffs.add(buff)
+    
+    def remove_buff(self, buff, *args, **kwargs):
+        self.buffs.remove(buff)
+
+    def __call__(self, *args, **kwargs):
+        x = self.function
+        for item in self.buffs:
+            x = item(x)
+        return x(self, *args, **kwargs)
+
+
+class AttributeBuffManager(BuffManager):
+    def __init__(self, attribute, *args, **kwargs):
+        self.function = attribute
+        self.buffs = set()
+
+    def __call__(self, *args, **kwargs):
+        x = self.attribute
+        for item in self.buffs:
+            x = item(x)
+        return x

@@ -1,5 +1,6 @@
 from .cards import CardMap
 from .cards import Deck
+from game.buff import BuffManager
 
 special_mapping = {
     "Death": "death",
@@ -46,6 +47,7 @@ class BasePlayer:
     def increase_mana(self, element, value, *args, **kwargs):
         self.mana[element] += value
     
+    @BuffManager
     def get_mana_inc(self, element, *args, **kwargs):
         return self.mana_inc.get(element, 0)
 
