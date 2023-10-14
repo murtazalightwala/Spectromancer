@@ -9,7 +9,7 @@ class BaseWaterCard(BaseCard):
 class Meditation(SpellMixin, BaseWaterCard):
     name = "Meditation"
     spell = True
-    mana_cost = 1
+    _mana_cost = 1
 
     def summon_actions(self, *args, **kwargs):
         for element in ["fire", "air", "earth"]:
@@ -17,27 +17,27 @@ class Meditation(SpellMixin, BaseWaterCard):
 
 class SeaSprite(BaseWaterCard):
     name = "Sea Sprite"
-    mana_cost = 2
-    attack = 5
-    life = 22
+    _mana_cost = 2
+    _attack = 5
+    _life = 22
 
     def start_of_owner_turn_actions(self, *args, **kwargs):
         yield SpecialAttack(doer = self, target = self.slot.player, damage = 2, stage = "start of owner turn", *args, **kwargs)
 
 class MerfolkApostate(BaseWaterCard):
     name = "Merfolk Apostate"
-    mana_cost = 3
-    attack = 3
-    life = 10
+    _mana_cost = 3
+    _attack = 3
+    _life = 10
 
     def summon_actions(self, *args, **kwargs):
         yield ManaIncrease(doer = self, target = self.slot.player, element = "fire", increase = 2, *args, **kwargs)
     
 class IceGolem(BaseWaterCard):
     name = "Ice Golem"
-    mana_cost = 4
-    attack = 4
-    life = 12
+    _mana_cost = 4
+    _attack = 4
+    _life = 12
 
     def take_damage(self, damage, type, stage, *args, **kwargs):
         if type != "BasicAttack":
@@ -46,9 +46,9 @@ class IceGolem(BaseWaterCard):
 
 class MerfolkElder(BaseWaterCard):
     name = "Merfolk Elder"
-    mana_cost = 5
-    attack = 3
-    life = 16
+    _mana_cost = 5
+    _attack = 3
+    _life = 16
 
     def summon_actions(self, *args, **kwargs):
 
@@ -67,9 +67,9 @@ class MerfolkElder(BaseWaterCard):
 
 class IceGuard(BaseWaterCard):
     name = "Ice Guard"
-    mana_cost = 6
-    attack = 3
-    life = 20
+    _mana_cost = 6
+    _attack = 3
+    _life = 20
 
     def summon_actions(self, *args, **kwargs):
         f = self.slot.player.take_damage
@@ -90,9 +90,9 @@ class IceGuard(BaseWaterCard):
 
 class GiantTurtle(BaseWaterCard):
     name = "Giant Turtle"
-    mana_cost = 7 
-    attack = 5
-    life = 16
+    _mana_cost = 7 
+    _attack = 5
+    _life = 16
 
     def take_damage(self, damage, type, stage, *args, **kwargs):
         return super().take_damage(max(damage - 5, 0), type, stage, *args, **kwargs)
@@ -100,7 +100,7 @@ class GiantTurtle(BaseWaterCard):
 class AcidicRain(SpellMixin, BaseWaterCard):
     name = "Acidic Rain"
     spell = True
-    mana_cost = 8
+    _mana_cost = 8
 
     def summon_actions(self, *args, **kwargs):
         owner = self.player
@@ -120,8 +120,60 @@ class AcidicRain(SpellMixin, BaseWaterCard):
 class MerfolkOverlord(BaseWaterCard):
 
     name = "Merfolk Overlord"
-    mana_cost = 9
-    attack = 7
-    life = 35
+    _mana_cost = 9
+    _attack = 7
+    _life = 35
 
+    def summon_actions(self, *args, **kwargs):
+
+        def buff_function(target):
+
+            def _func(card, *args, **kwargs):
+                return card.turn_actions(*args, **kwargs)
+            
+            if isinstance(target, BaseCard):
+                setattr(target, "summon_actions", _func)
+
+            
+        
+        def debuff_function(target):
+            if isinstance(target, BaseCard):
+                setattr(target, "summon_actions", BaseCard.summon_actions)
+        
+        for neighbour in self.slot.get_neighbours():
+            buff = BaseBuff(self, neighbour, buff_function, debuff_function, *args, **kwargs)
+            self.buffs_doer.append(buff)
+            
+            yield ApplyBuff(buff = buff, doer = self, target = neighbour, stage = "summon", *args, **kwargs)
+
+class WaterElemental(BaseWaterCard):
+
+    name = "Water Elemental"
+    _mana_cost = 10
+    _life = 37
+
+    @property
+    def attack(self):
+        return self.slot.player.get_mana(self.type)
     
+    def summon_actions(self, *args, **kwargs):
+
+        yield Heal(health = 10, doer = self, target = self.slot.player, *args, **kwargs)
+
+        def buff_function(target):
+            mana_inc = target.get_mana_inc(self.type)
+            target.set_mana_inc(self.type, mana_inc + 1)
+        
+        def debuff_function(target):
+            mana_inc = target.get_mana_inc(self.type)
+            target.set_mana_inc(self.type, mana_inc - 1)
+        
+        buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
+        self.buffs = [buff]
+        
+        yield ApplyBuff(buff = buff, doer = self, target = self.slot.player, stage = "summon", *args, **kwargs)
+    
+
+
+        def buff_function(target):
+

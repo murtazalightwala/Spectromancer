@@ -8,9 +8,9 @@ class BaseFireCard(BaseCard):
 
 class GoblinBerserker(BaseFireCard):
     name = "Goblin Berserker"
-    mana_cost = 1
-    attack = 4
-    life = 16
+    _mana_cost = 1
+    _attack = 4
+    _life = 16
 
     def start_of_owner_turn_actions(self, *args, **kwargs):
         for neighbour in self.slot.get_neighbours():
@@ -20,9 +20,9 @@ class GoblinBerserker(BaseFireCard):
 
 class WallOfFire(BaseFireCard):
     name = "Wall Of Fire"
-    mana_cost = 2
-    attack = 0
-    life = 5
+    _mana_cost = 2
+    _attack = 0
+    _life = 5
     wall = True
 
     def summon_actions(self, *args, **kwargs):
@@ -32,19 +32,26 @@ class WallOfFire(BaseFireCard):
 
 class PriestOfFire(BaseFireCard):
     name = "Priest Of Fire"
-    mana_cost = 3
-    attack = 3
-    life = 13
+    _mana_cost = 3
+    _attack = 3
+    _life = 13
 
     def summon_actions(self, *args, **kwargs):
+
+        def f(func):
+
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    if element == self.type:
+                        _output += 1
+                    return _output
+                return _func
        
         def buff_function(target):
-            mana_inc = target.get_mana_inc("fire")
-            target.set_mana_inc("fire", mana_inc + 1)
+            target.get_mana_inc.apply_buff(f)
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc("fire")
-            target.set_mana_inc("fire", mana_inc - 1)
+            mana_inc = target.get_mana_inc.remove_buff(f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -55,9 +62,9 @@ class PriestOfFire(BaseFireCard):
 class FireDrake(BaseFireCard):
 
     name = "Fire Drake"
-    mana_cost = 4
-    attack = 4
-    life = 18
+    _mana_cost = 4
+    _attack = 4
+    _life = 18
 
     def summon_actions(self, *args, **kwargs):
         return super().turn_actions(*args, **kwargs)
@@ -65,12 +72,28 @@ class FireDrake(BaseFireCard):
 class OrcChiefTain(BaseFireCard):
 
     name = "Orc Chieftain"
-    mana_cost = 5
-    attack = 3
-    life = 17
+    _mana_cost = 5
+    _attack = 3
+    _life = 17
     buffs = []
 
     def summon_actions(self, *args, **kwargs):
+
+        def f(func):
+
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    if element == self.type:
+                        _output += 1
+                    return _output
+                return _func
+       
+        def buff_function(target):
+            target.attack.apply_buff(f)
+        
+        def debuff_function(target):
+            mana_inc = target.attack.remove_buff(f)
+        
         
         def buff_function(target):
             if isinstance(target, Slot):
@@ -95,7 +118,7 @@ class OrcChiefTain(BaseFireCard):
 class FlameWave(SpellMixin, BaseFireCard):
     name = "Flame Wave"
     spell = True
-    mana_cost = 6
+    _mana_cost = 6
 
     def summon_actions(self, *args, **kwargs):
         opponent = self.player.opponent
@@ -105,9 +128,9 @@ class FlameWave(SpellMixin, BaseFireCard):
 
 class MinotaurCommander(BaseFireCard):
     name = "Minotaur Commander"
-    mana_cost = 7
-    attack = 6
-    life = 20
+    _mana_cost = 7
+    _attack = 6
+    _life = 20
 
     def summon_actions(self, *args, **kwargs):
         
@@ -133,9 +156,9 @@ class MinotaurCommander(BaseFireCard):
 
 class Bargul(BaseFireCard):
     name = "Bargul"
-    mana_cost = 8
-    attack = 8
-    life = 26
+    _mana_cost = 8
+    _attack = 8
+    _life = 26
 
     def summon_actions(self, *args, **kwargs):
         owner = self.slot.player
@@ -152,7 +175,7 @@ class Bargul(BaseFireCard):
 class Inferno(SpellMixin, BaseFireCard):
     name = "Inferno"
     spell = True
-    mana_cost = 9
+    _mana_cost = 9
 
     def summon_actions(self, target = None, *args, **kwargs):
         if target is not None:
@@ -164,8 +187,8 @@ class Inferno(SpellMixin, BaseFireCard):
 
 class FireElemental(BaseFireCard):
     name = "Fire Elemental"
-    mana_cost = 10
-    life = 37
+    _mana_cost = 10
+    _life = 37
 
     @property
     def attack(self):
@@ -188,7 +211,7 @@ class FireElemental(BaseFireCard):
     
 class Armageddon(SpellMixin, BaseFireCard):
     name = "Armageddon"
-    mana_cost = 11 
+    _mana_cost = 11 
     spell = True
 
     def summon_actions(self, *args, **kwargs):
@@ -204,9 +227,9 @@ class Armageddon(SpellMixin, BaseFireCard):
 
 class Dragon(BaseFireCard):
     name = "Dragon"
-    mana_cost = 12
-    attack = 9
-    life = 40
+    _mana_cost = 12
+    _attack = 9
+    __life = 40
 
     def summon_actions(self, *args, **kwargs):
 
