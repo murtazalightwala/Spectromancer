@@ -1,10 +1,10 @@
 from game.cards import BaseCard, SpellMixin
 from game.actions import *
-from game.buff import BaseBuff
+from game.buff import BaseBuff, managed_by_buff
 from game.slot import Slot
 
 class BaseFireCard(BaseCard):
-    type = "Fire"
+    type = "fire"
 
 class GoblinBerserker(BaseFireCard):
     name = "Goblin Berserker"
@@ -39,7 +39,6 @@ class PriestOfFire(BaseFireCard):
     def summon_actions(self, *args, **kwargs):
 
         def f(func):
-
                 def _func(_obj, element, *args, **kwargs):
                     _output = func(_obj, element, *args, **kwargs)
                     if element == self.type:
@@ -51,7 +50,7 @@ class PriestOfFire(BaseFireCard):
             target.get_mana_inc.apply_buff(f)
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc.remove_buff(f)
+            target.get_mana_inc.remove_buff(f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -79,35 +78,23 @@ class OrcChiefTain(BaseFireCard):
 
     def summon_actions(self, *args, **kwargs):
 
-        def f(func):
-
-                def _func(_obj, element, *args, **kwargs):
-                    _output = func(_obj, element, *args, **kwargs)
-                    if element == self.type:
-                        _output += 1
-                    return _output
-                return _func
-       
-        def buff_function(target):
-            target.attack.apply_buff(f)
-        
-        def debuff_function(target):
-            mana_inc = target.attack.remove_buff(f)
-        
+        def f(attack):
+            _output = attack + 2
+            return _output        
         
         def buff_function(target):
             if isinstance(target, Slot):
                 return
             elif target.wall:
                 return
-            target.attack += 2
+            BaseCard.attack.get_or_create_instance(target).apply_buff(f)
         
         def debuff_function(target):
             if isinstance(target, Slot):
                 return
             elif target.wall:
                 return
-            target.attack -= 2
+            BaseCard.attack.get_or_create_instance(target).remove_buff(f)
         
         neighbours = self.slot.get_neighbours()
         for neighbour in neighbours:
@@ -134,19 +121,24 @@ class MinotaurCommander(BaseFireCard):
 
     def summon_actions(self, *args, **kwargs):
         
+        def f(attack):
+            return attack  + 2
+        
+        
         def buff_function(target):
             if isinstance(target, Slot):
                 return
             elif target.wall:
                 return
-            target.attack += 1
+            BaseCard.attack.get_or_create_instance(target).apply_buff(f)
         
         def debuff_function(target):
             if isinstance(target, Slot):
                 return
             elif target.wall:
                 return
-            target.attack -= 1
+            BaseCard.attack.get_or_create_instance(target).remove_buff(f)
+        
         
         owner = self.slot.player
         for slot_id, slot in owner.slots.items():
@@ -190,19 +182,26 @@ class FireElemental(BaseFireCard):
     _mana_cost = 10
     _life = 37
 
+    @managed_by_buff
     @property
     def attack(self):
         return self.slot.player.get_mana(self.type)
     
     def summon_actions(self, *args, **kwargs):
         
+        def f(func):
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    if element == self.type:
+                        _output += 1
+                    return _output
+                return _func
+       
         def buff_function(target):
-            mana_inc = target.get_mana_inc("fire")
-            target.set_mana_inc("fire", mana_inc + 1)
+            target.get_mana_inc.apply_buff(f)
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc("fire")
-            target.set_mana_inc("fire", mana_inc - 1)
+            target.get_mana_inc.remove_buff(f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -233,20 +232,20 @@ class Dragon(BaseFireCard):
 
     def summon_actions(self, *args, **kwargs):
 
-        f = self.slot.player.play_card
-        
+        def f(func):
+                def _func(_obj, card_name, slot_id, *args, **kwargs):
+                    _output = func(_obj, card_name, slot_id, *args, **kwargs)
+                    for summon_action  in _output:
+                        if summon_action.doer.spell:
+                            summon_action.damage += summon_action//2
+                    return _output
+                return _func
+       
         def buff_function(target):
-            def _func(*args, **kwargs):
-                actions = f(*args, **kwargs)
-                for action in actions:
-                    if action.doer.spell:
-                        action.damage += action.damage/2
-                return actions
-            setattr(target, "play_card", _func)
-            
+            target.play_card.apply_buff(f)
         
         def debuff_function(target):
-            setattr(target, "play_card", f)
+            target.play_card.remove_buff(f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]

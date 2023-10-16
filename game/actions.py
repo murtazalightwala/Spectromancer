@@ -165,3 +165,17 @@ class MoveCard(BaseAction):
                 card.slot = self.target.slots[self._to]
                 self.target.slots[self._to].set_card(card)
 
+class KillCard(BaseAction):
+
+    type = "KillCard"
+
+    def __init__(self, slot, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.slot = slot
+    
+    def __call__(self, *args, **kwargs):
+        killed_card = self.slot.remove_card()
+        death_actions = [x for x in killed_card.death_actions()]
+        for action in death_actions:
+            action()
+

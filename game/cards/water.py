@@ -1,10 +1,10 @@
 from game.cards import BaseCard, SpellMixin
 from game.actions import *
-from game.buff import BaseBuff
+from game.buff import BaseBuff, managed_by_buff
 from game.slot import Slot
 
 class BaseWaterCard(BaseCard):
-    type = "Water"
+    type = "water"
 
 class Meditation(SpellMixin, BaseWaterCard):
     name = "Meditation"
@@ -52,13 +52,19 @@ class MerfolkElder(BaseWaterCard):
 
     def summon_actions(self, *args, **kwargs):
 
+        def f(func):
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    if element == "air":
+                        _output += 1
+                    return _output
+                return _func
+       
         def buff_function(target):
-            mana_inc = target.get_mana_inc("air")
-            target.set_mana_inc("air", mana_inc + 1)
+            target.get_mana_inc.apply_buff(f)
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc("air")
-            target.set_mana_inc("air", mana_inc - 1)
+            target.get_mana_inc.remove_buff(f)
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -72,16 +78,21 @@ class IceGuard(BaseWaterCard):
     _life = 20
 
     def summon_actions(self, *args, **kwargs):
-        f = self.slot.player.take_damage
         
+        def f(func):
+                def _func(_obj, damage, *args, **kwargs):
+
+                    _output = func(_obj, damage//2, *args, **kwargs)
+                    
+                    return _output
+                return _func
+       
         def buff_function(target):
-            def _func(_obj, damage, *args, **kwargs):
-                return _obj.take_damage(damage//2, *args, **kwargs)
-            setattr(target, "take_damage", _func)
-            
+            target.take_damage.apply_buff(f)
         
         def debuff_function(target):
-            setattr(target, "take_damage", f)
+            target.take_damage.remove_buff(f)
+
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -126,19 +137,21 @@ class MerfolkOverlord(BaseWaterCard):
 
     def summon_actions(self, *args, **kwargs):
 
+        def f(func):
+                def _func(_obj, *args, **kwargs):
+                    _output = func(_obj, *args, **kwargs)
+                    _output.extend(_obj.turn_actions(*args, **kwargs))
+                    return _output
+                return _func
+       
         def buff_function(target):
-
-            def _func(card, *args, **kwargs):
-                return card.turn_actions(*args, **kwargs)
-            
             if isinstance(target, BaseCard):
-                setattr(target, "summon_actions", _func)
-
-            
+                target.summon_actions.apply_buff(f)
         
         def debuff_function(target):
             if isinstance(target, BaseCard):
-                setattr(target, "summon_actions", BaseCard.summon_actions)
+                target.summon_actions.remove_buff(f)
+
         
         for neighbour in self.slot.get_neighbours():
             buff = BaseBuff(self, neighbour, buff_function, debuff_function, *args, **kwargs)
@@ -152,6 +165,7 @@ class WaterElemental(BaseWaterCard):
     _mana_cost = 10
     _life = 37
 
+    @managed_by_buff
     @property
     def attack(self):
         return self.slot.player.get_mana(self.type)
@@ -160,13 +174,21 @@ class WaterElemental(BaseWaterCard):
 
         yield Heal(health = 10, doer = self, target = self.slot.player, *args, **kwargs)
 
+      
+        def f(func):
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    if element == self.type:
+                        _output += 1
+                    return _output
+                return _func
+       
         def buff_function(target):
-            mana_inc = target.get_mana_inc(self.type)
-            target.set_mana_inc(self.type, mana_inc + 1)
+            target.get_mana_inc.apply_buff(f)
         
         def debuff_function(target):
-            mana_inc = target.get_mana_inc(self.type)
-            target.set_mana_inc(self.type, mana_inc - 1)
+            target.get_mana_inc.remove_buff(f)
+        
         
         buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
         self.buffs = [buff]
@@ -175,5 +197,67 @@ class WaterElemental(BaseWaterCard):
     
 
 
-        def buff_function(target):
+class MindMaster(BaseWaterCard):
 
+    name = "Mind Master"
+    _mana_cost = 11
+    _attack = 6
+    _life = 23
+    buffs = list()
+
+    def summon_actions(self, *args, **kwargs):
+
+        def f(func):
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    _output += 1
+                    return _output
+                return _func
+          
+       
+        def buff_function(target):
+            if isinstance(target, BaseCard):
+                target.get_mana_inc.apply_buff(f)
+        
+        def debuff_function(target):
+            if isinstance(target, BaseCard):
+                target.get_mana_inc.remove_buff(f)
+
+        
+        buff = BaseBuff(self, self.slot.player, buff_function, debuff_function, *args, **kwargs)
+        self.buffs.append(buff)
+        
+        yield ApplyBuff(buff = buff, doer = self, target = self.slot.player, stage = "summon", *args, **kwargs)
+
+
+class AstralGuard(BaseWaterCard):
+
+    name = "Astral Guard"
+    _mana_cost = 12
+    _attack = 1
+    _life = 18
+    buffs = list()
+
+    def summon_actions(self, *args, **kwargs):
+
+        def f(func):
+                def _func(_obj, element, *args, **kwargs):
+                    _output = func(_obj, element, *args, **kwargs)
+                    _output -= 1
+                    return _output
+                return _func
+          
+       
+        def buff_function(target):
+            if isinstance(target, BaseCard):
+                target.get_mana_inc.apply_buff(f)
+        
+        def debuff_function(target):
+            if isinstance(target, BaseCard):
+                target.get_mana_inc.remove_buff(f)
+
+        
+        buff = BaseBuff(self, self.slot.player.opponent, buff_function, debuff_function, *args, **kwargs)
+        self.buffs.append(buff)
+        
+        yield ApplyBuff(buff = buff, doer = self, target = self.slot.player.opponent, stage = "summon", *args, **kwargs)
