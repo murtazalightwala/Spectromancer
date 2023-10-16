@@ -1,6 +1,6 @@
 from game.slot import Slot
 from game.actions import ApplyDebuff, BasicAttack
-from game.buff import BuffManager
+from game.buff import BuffManager, managed_by_buff
 
 class Deck:
     def __init__(self) -> None:
@@ -20,22 +20,22 @@ class BaseCard:
     spell:bool = False
     wall:bool = False
 
-    @BuffManager
+    @managed_by_buff
     @property
     def attack(self):
         return self._attack
 
-    @BuffManager
+    @managed_by_buff
     @property
     def life(self):
         return self._life
 
-    @BuffManager
+    @managed_by_buff
     @property
     def mana_cost(self):
         return self._mana_cost
 
-    @BuffManager
+    @managed_by_buff
     @property
     def state(self):
         return self._state
@@ -70,9 +70,11 @@ class BaseCard:
     def end_of_opponent_turn_actions(self, *args, **kwargs):
         return []
 
+    @managed_by_buff
     def summon_actions(self, *args, **kwargs):
         return []
 
+    @managed_by_buff
     def death_actions(self, *args, **kwargs):
         for buff in self.buffs:
             yield ApplyDebuff(buff = buff, doer = self, target = buff.target, *args, **kwargs)
@@ -85,6 +87,7 @@ class BaseCard:
 class SpellMixin:
     attack = 0
     life = 0
+    spell = True
 
     def __init__(self, player, *args, **kwargs) -> None:
         self.player = player

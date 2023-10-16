@@ -1,6 +1,6 @@
 from .cards import CardMap
 from .cards import Deck
-from game.buff import BuffManager
+from game.buff import managed_by_buff
 
 special_mapping = {
     "Death": "death",
@@ -25,6 +25,7 @@ class BasePlayer:
     def build_by_config(self, game_config, *args, **kwargs):
         game_config.configure_player(self)
 
+    @managed_by_buff
     @property
     def life(self):
         return self._life
@@ -33,6 +34,7 @@ class BasePlayer:
     def life(self, value):
         self._life = value
 
+    @managed_by_buff
     def get_mana(self, element, *args, **kwargs):
         return self.mana.get(element, 0)
 
@@ -47,7 +49,7 @@ class BasePlayer:
     def increase_mana(self, element, value, *args, **kwargs):
         self.mana[element] += value
     
-    @BuffManager
+    @managed_by_buff
     def get_mana_inc(self, element, *args, **kwargs):
         return self.mana_inc.get(element, 0)
 
@@ -66,6 +68,7 @@ class BasePlayer:
     def shuffle_deck(self, element, *args, **kwargs):
         self.deck.shuffle(element)
 
+    @managed_by_buff
     def play_card(self, card_name, slot_id, *args, **kwargs):
         card_info = CardMap.get_card_info(card_name)
         summon_actions = []

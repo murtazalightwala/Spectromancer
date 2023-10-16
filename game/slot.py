@@ -1,5 +1,4 @@
 
-
 class Slot:
     def __init__(self, owner, position) -> None:
         self.player = owner
