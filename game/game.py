@@ -43,16 +43,21 @@ class BaseGameConfig:
 
 
 class BaseGame:
-    def __init__(self, player_1, player_2):
+    def __init__(self, player_1, player_2, *args, **kwargs):
         self.player_1 = player_1
         self.player_2 = player_2
-        self.turn = [self.player_1, 1]
+        self.round = 0
+        self.turn = self.player_1
         self.is_ended = False
 
-    def switch_turn(self):
-        if self.turn[0] == self.player_1:
-            self.turn[0] = self.player_2
+    def switch_turn(self, *args, **kwargs):
+        if self.turn == self.player_1:
+            self.turn = self.player_2
         else:
-            self.turn[0] = self.player_1
-            self.turn[1] += 1
+            self.turn = self.player_1
+            self.round += 1
+
+    def play_turn(self, *args, **kwargs):
+        self.turn.play_start_of_turn_actions(*args, **kwargs)
+        self.turn.opponent.play_start_of_opponent_turn_actions(*args, **kwargs)
 

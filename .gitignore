@@ -1,0 +1,6 @@
+.*
+!.gitignore
+*.ipynb
+__pycache__
+__pycache__/
+settings.json
