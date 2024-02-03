@@ -60,5 +60,5 @@ class Authenticator{
         self.password = password;
     }
 
-    function 
+    function  
 }
