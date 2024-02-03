@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import callAPI from './utils/callAPI';
+import AuthService from './utils/services/auth';
 
 
 export default function SignUpPage() {
@@ -27,22 +27,14 @@ function SignUpTile() {
 
     function onSubmit(event) {
         if (password === retype_password){
-        let response = callAPI("/users/users/", "POST", {'Content-Type': 'application/json'},JSON.stringify(
-            {
-                "user":{
+            let user = {
                     "first_name": first_name,
                     "last_name": last_name,
                     "username": username,
                     "email": email,
-                    "password": password
-
-            },
-                "avatar_url": avatar_url,
-                "mobile_number": mobile,
-                "special": special
-                             }
-            )
-            );
+                    "password": password,
+                };
+        let response = AuthService.register(user, avatar_url, mobile, special);   
         }
         else{
             setErrors("Passwords don't match!!!!!")

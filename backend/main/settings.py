@@ -35,14 +35,17 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
     )
     
 }
-
 SIMPLE_JWT = {
-
-        "AUTH_HEADER_NAME": "HTTP_SPECTROMANCER_TOKEN"
-        }
+  # It will work instead of the default serializer(TokenObtainPairSerializer).
+  "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.CustomTokenObtainPairSerializer",
+  "AUTH_HEADER_NAME": "HTTP_SPECTROMANCER_TOKEN",
+  "AUTH_HEADER_TYPES": ("spectromancer-token"),
+  # ...
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
