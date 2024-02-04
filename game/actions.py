@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from .cards import CardMap
 
 class BaseAction:
     """
@@ -49,7 +48,18 @@ class ApplyBuff(BaseAction):
         self.buff = buff
         
     def __call__(self, *args, **kwargs):
-        pass
+        self.buff.apply_buff(self.buff.target, *args, **kwargs)
+
+class ApplyDebuff(BaseAction):
+
+    type = "ApplyDebuff"
+
+    def __init__(self, buff, *args, **kwargs):
+        super().__init__(**kwargs)
+        self.buff = buff
+    
+    def __call__(self, *args, **kwargs):
+        self.buff.apply_debuff(self.buff.target, *args, **kwargs)
 
 class Heal(BaseAction):
     
@@ -120,6 +130,8 @@ class AddCard(BaseAction):
         self.replace = replace
 
     def __call__(self, *args, **kwargs):
+        from game.cards import CardMap
+
         if self.target.slots[self.slot_id].is_empty:
             self.target.slots[self.slot_id].set_card(CardMap.get_card_by_name(self.card_name, player = self.target, slot = self.target.slots[self.slot_id], slot_id = self.slot_id))
         elif self.replace:
@@ -152,4 +164,18 @@ class MoveCard(BaseAction):
                 card.slot_id = self._to
                 card.slot = self.target.slots[self._to]
                 self.target.slots[self._to].set_card(card)
+
+class KillCard(BaseAction):
+
+    type = "KillCard"
+
+    def __init__(self, slot, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.slot = slot
+    
+    def __call__(self, *args, **kwargs):
+        killed_card = self.slot.remove_card()
+        death_actions = [x for x in killed_card.death_actions()]
+        for action in death_actions:
+            action()
 
