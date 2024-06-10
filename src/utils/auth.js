@@ -1,64 +1,33 @@
-import React, { useState, useEffect, useContext, createContext } from 'react'
+import {HOST, AUTH_URLS} from '../config/urls';
 
-const authContext = createContext()
+export var AccessToken = null;
+export var RefreshToken = null;
 
-export function AuthProvider({ children }) {
-  const auth = useProvideAuth()
-  return <authContext.Provider value={auth}>{children}</authContext.Provider>
+
+
+export default function refreshAuthToken() {
+    
+    response = fetch(HOST + AUTH_URLS.REFRESH_TOKEN, {method: "POST", body: {"refresh": RefreshToken}}).then(response => {
+       if (response.ok) {
+
+            data = response.json();
+            console.log(data);
+            AccessToken = data.access;
+        
+            return ;
+        } 
+    
+        else {
+
+         throw Error("Something went wrong while refreshing token!!!!!!");
+        }
+    })
 }
 
-export const useAuth = () => {
-  return useContext(authContext)
-}
 
-function useProvideAuth() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+export function setTokens(access_token, refresh_token) {
+    AccessToken = access_token;
+    RefreshToken = refresh_token;
+    console.log(AccessToken);
 
-  const signin = (username, password) => {
-    setLoading(true)
-    return firebase
-      .auth()
-      .signInWithPopup(new firebase.auth.GithubAuthProvider())
-      .then((response) => handleUser(response.user))
-  }
-
-  const signout = () => {
-    return firebase
-      .auth()
-      .signOut()
-      .then(() => handleUser(false))
-  }
-
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(handleUser)
-
-    return () => unsubscribe()
-  }, [])
-
-  return {
-    user,
-    loading,
-    signinWithGitHub,
-    signout,
-  }
-}
-
-const formatUser = (user) => {
-  return {
-    uid: user.uid,
-    email: user.email,
-    name: user.displayName,
-    provider: user.providerData[0].providerId,
-    photoUrl: user.photoURL,
-  }
-}
-
-class Authenticator{
-    constructor (username, password) {
-        self.username = username;
-        self.password = password;
-    }
-
-    function  
 }

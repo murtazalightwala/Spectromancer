@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import callAPI from './utils/callAPI';
-
+import {setTokens} from './utils/auth';
 
 
 export default function LoginPage() {
@@ -20,7 +20,9 @@ function LoginTile() {
     let navigate = useNavigate();
 
     function onSubmit(event) {
-        let response = callAPI("/users/token", "POST", {'Content-Type': 'application/json'},JSON.stringify({"username": username, "password": password}));
+        callAPI("/users/token", "POST", {'Content-Type': 'application/json'},JSON.stringify({"username": username, "password": password})).then(response_data => {
+            console.log(response_data)
+        setTokens(response_data.access, response_data.refresh);})
     }
 
 
