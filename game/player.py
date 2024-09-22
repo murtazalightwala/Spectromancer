@@ -13,7 +13,7 @@ class BasePlayer:
     def __init__(self, name, special, *args, **kwargs) -> None:
         self.name = name
         self.special = special
-        self.element_list.append(special_mapping.get(special))
+        self.element_list.append(special_mapping.get(self.special, ""))
         self.mana = {}
         self.mana_inc = {}
         self._life = 0

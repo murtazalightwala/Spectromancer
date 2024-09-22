@@ -175,7 +175,7 @@ class Inferno(SpellMixin, BaseFireCard):
         opponent = self.slot.player.opponent
         for slot_id, slot in opponent.slots.items():
             if slot.card is not None:
-                yield SpecialAttack(damage = 10, doer = self, target = target, stage = "summon", *args, **kwargs)
+                yield SpecialAttack(damage = 10, doer = self, target = slot.card, stage = "summon", *args, **kwargs)
 
 class FireElemental(BaseFireCard):
     name = "Fire Elemental"
