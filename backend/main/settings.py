@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'user_auth'
+    'user_auth',
+    'game'
 ]
 
 MIDDLEWARE = [

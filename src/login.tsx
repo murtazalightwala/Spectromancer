@@ -22,7 +22,7 @@ function LoginTile() {
     function onSubmit(event) {
         callAPI("/users/token", "POST", {'Content-Type': 'application/json'},JSON.stringify({"username": username, "password": password})).then(response_data => {
             console.log(response_data)
-        setTokens(response_data.access, response_data.refresh);})
+        setTokens(response_data.access, response_data.refresh);}).then( () => navigate('/home'))
     }
 
 
@@ -37,7 +37,7 @@ function LoginTile() {
 				</div> 
 				<div className='inputRow'> 
 					<label className='LoginFormLabel' htmlFor="password">Password</label>
-					<input type="password" name="password" id="password" value={password} onChange={(e) => {setPassword(e.target.value)}}/> 
+					<input type="password" name="password" id="password" value={password} onChange={(e) => {setPassword(e.target.value)}} onSubmit={onSubmit}/> 
 				</div>  
 				<button className='LoginSubmitButton' onClick={onSubmit}>Login</button>
                 <p>--or--</p>
