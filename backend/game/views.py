@@ -3,14 +3,14 @@ from rest_framework.decorators import action
 from .models import Game
 from .serializers import GameSerializer 
 from rest_framework.response import Response
-from user_auth.permissions import UserViewSetPermission
+from user_auth.permissions import GameViewSetPermissions 
 # Create your views here.
 
 
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer 
-    permission_classes = [UserViewSetPermission]
+    permission_classes = [GameViewSetPermissions]
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

@@ -28,3 +28,28 @@ class UserViewSetPermission(permissions.BasePermission):
             return request.user.is_staff
         else:
             return False
+
+class GameViewSetPermissions(permissions.BasePermission):
+    """
+    Permission class to check that a user can update his own resource only
+    """
+
+    def has_permission(self, request, view):
+        if view.action in ['list', 'create']:
+            return request.user.is_authenticated
+        else:
+            return False
+                                                                                                
+    def has_object_permission(self, request, view, obj):
+        # Deny actions on objects if the user is not authenticated
+        
+        if not request.user.is_authenticated:
+            return False
+        if view.action == 'retrieve':
+            return obj.user == request.user or request.user.is_staff
+        elif view.action in ['update', 'partial_update']:
+            return obj.user == request.user or request.user.is_staff
+        elif view.action == 'destroy':
+            return request.user.is_staff
+        else:
+            return False

@@ -9,7 +9,7 @@ import HomePage from './home';
 
 function App() {
   return (
-    <div className="App" style={{backgroundImage:`url(${background})`, height:"100vh", width:"100vw", justifySelf: "stretch"}}>
+        <div className="App" style={{backgroundImage:`url(${background})`, height:"100vh", width:"100vw", justifySelf: "stretch"}}>
       <NavBar/>
       <BrowserRouter>
       <Routes>
