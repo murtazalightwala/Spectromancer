@@ -1,9 +1,8 @@
 import {HOST, AUTH_URLS} from '../config/urls';
+import {useState} from 'react';
 
-export var AccessToken = null;
-export var RefreshToken = null;
-
-
+export const [AccessToken, setAccessToken] = useState("NA");
+export const [RefreshToken, setRefreshToken] = useState("NA");
 
 export default function refreshAuthToken() {
     
@@ -12,7 +11,7 @@ export default function refreshAuthToken() {
 
             data = response.json();
             console.log(data);
-            AccessToken = data.access;
+            setAccessToken(data.acces);
         
             return ;
         } 
@@ -26,8 +25,9 @@ export default function refreshAuthToken() {
 
 
 export function setTokens(access_token, refresh_token) {
-    AccessToken = access_token;
-    RefreshToken = refresh_token;
+     setAccessToken(access_token);
+    setRefreshToken(refresh_token);
     console.log(AccessToken);
 
-}
+};
+

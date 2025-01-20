@@ -12,7 +12,7 @@ class UserProfile(models.Model):
         ("death", "Death"),
         ("chaos", "Chaos")
     ]
-    user = models.OneToOneField(primary_key = True,to = User, related_name = "user", on_delete = models.CASCADE)
+    user = models.OneToOneField(to = User, primary_key = True, on_delete = models.CASCADE, related_name = "profile")
     special = models.CharField(choices= special_choices, max_length = 40)
     avatar_url = models.URLField()
     mobile_number = models.CharField(max_length = 15)

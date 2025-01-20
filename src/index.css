@@ -114,3 +114,8 @@ color: white;
  {
   align-self: center;
  }
+
+.GameTable
+{
+  color: rgba(255, 255, 255, 1);
+}

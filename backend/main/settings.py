@@ -42,8 +42,6 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
   # It will work instead of the default serializer(TokenObtainPairSerializer).
   "TOKEN_OBTAIN_SERIALIZER": "user_auth.serializers.CustomTokenObtainPairSerializer",
-  "AUTH_HEADER_NAME": "HTTP_SPECTROMANCER_TOKEN",
-  "AUTH_HEADER_TYPES": ("spectromancer-token"),
   # ...
 }
 

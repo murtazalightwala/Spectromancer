@@ -1,5 +1,5 @@
 import {HOST} from '../config/urls';
-import {AccessToken} from './auth';
+import {AccessToken, RefreshToken} from './auth';
 
 
 
@@ -13,10 +13,14 @@ export default async function callAPI(url, method, headers, payload, callback = 
     if (AccessToken){
 
 
-        all_headers = {...all_headers, "Authorization": "Bearer $(AccessToken)"}; 
+        all_headers = {...all_headers, "AUTHORIZATION": "Bearer $(AccessToken)"}; 
 
 
 
+    }
+    else {
+
+        console.log("No access token !!!");
     }
 
     return await fetch(HOST + url, {method: method, headers: all_headers, body: payload} ).then(
